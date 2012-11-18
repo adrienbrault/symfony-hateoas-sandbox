@@ -2,3 +2,6 @@
 #_internal:
 #    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
 #    prefix:   /_internal
+
+_api:
+    resource: "@AdrienBraultApiBundle/Resources/config/routing/routing.yml"

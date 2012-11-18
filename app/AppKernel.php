@@ -21,6 +21,10 @@ class AppKernel extends Kernel
             // new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             // new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
 
+            new FOS\RestBundle\FOSRestBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FSC\HateoasBundle\FSCHateoasBundle(),
+
             new AdrienBrault\ApiBundle\AdrienBraultApiBundle(),
         );
 

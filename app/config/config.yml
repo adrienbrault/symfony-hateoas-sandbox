@@ -17,6 +17,9 @@ framework:
     trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
     session:         ~
 
+sensio_framework_extra:
+    view: { annotations: false }
+
 # Twig Configuration
 twig:
     debug:            %kernel.debug%
@@ -60,3 +63,25 @@ swiftmailer:
     username:  %mailer_user%
     password:  %mailer_password%
     spool:     { type: memory }
+
+fos_rest:
+    body_listener: false
+    format_listener: true
+
+    view:
+        view_response_listener: true
+        formats:
+            xml: true
+            json: true
+        templating_formats:
+            html: false
+        mime_types:
+            json: "application/vnd.%mime_types_vendor%+json"
+            xml: "application/vnd.%mime_types_vendor%+xml"
+
+    format_listener:
+        default_priorities:
+            - xml
+            - json
+            - html
+        fallback_format: xml

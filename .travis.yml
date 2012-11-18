@@ -1,0 +1,15 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+
+before_script:
+  - cp app/config/parameters.yml.dist app/config/parameters.yml
+  - composer --dev install
+
+script:
+  #- phpunit -c app/ --coverage-text
+  - bin/behat #-fprogress
+
+after_script:
+  - bin/php-cs-fixer fix ./ --dry-run --verbose

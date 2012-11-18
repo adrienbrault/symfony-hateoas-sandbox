@@ -1,0 +1,10 @@
+web/bundles/
+app/bootstrap.php.cache
+app/SymfonyRequirements.php
+app/cache/*
+app/logs/*
+app/config/parameters.yml
+build/
+vendor
+composer.phar
+bin/

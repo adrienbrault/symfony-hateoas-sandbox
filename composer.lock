@@ -1,5 +1,5 @@
 {
-    "hash": "04b302d91e214695745b735ab1963370",
+    "hash": "3991d6993839b29c32dedfac099957c0",
     "packages": [
         {
             "name": "doctrine/common",
@@ -2085,22 +2085,22 @@
         },
         {
             "name": "sanpi/behatch-contexts",
-            "version": "dev-master",
+            "version": "dev-patch-3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sanpii/behatch-contexts",
-                "reference": "c0177b0138348b199ffd4c8b4ce3ed56907ca5c8"
+                "url": "https://github.com/adrienbrault/behatch-contexts",
+                "reference": "f6fc5a71e1ddc1814acd2e6c587aa5b756ffffd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/sanpii/behatch-contexts/archive/c0177b0138348b199ffd4c8b4ce3ed56907ca5c8.zip",
-                "reference": "c0177b0138348b199ffd4c8b4ce3ed56907ca5c8",
+                "url": "https://github.com/adrienbrault/behatch-contexts/archive/f6fc5a71e1ddc1814acd2e6c587aa5b756ffffd4.zip",
+                "reference": "f6fc5a71e1ddc1814acd2e6c587aa5b756ffffd4",
                 "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "*"
             },
-            "time": "1348694794",
+            "time": "1353268482",
             "type": "library",
             "installation-source": "source",
             "autoload": {
@@ -2110,18 +2110,21 @@
             },
             "description": "Behatch contexts",
             "keywords": [
-                "Symfony2",
                 "BDD",
                 "Behat",
+                "Symfony2",
                 "Context"
-            ]
+            ],
+            "support": {
+                "source": "https://github.com/adrienbrault/behatch-contexts/tree/patch-3"
+            }
         }
     ],
     "aliases": [
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ]
+    "stability-flags": {
+        "sanpi/behatch-contexts": 20
+    }
 }

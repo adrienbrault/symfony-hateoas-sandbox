@@ -33,9 +33,15 @@
         "behat/mink-browserkit-driver": "*",
         "behat/symfony2-extension": "*",
         "behat/common-contexts": "*",
-        "sanpi/behatch-contexts": "*",
+        "sanpi/behatch-contexts": "dev-patch-3",
         "fabpot/php-cs-fixer": "*"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/adrienbrault/behatch-contexts"
+        }
+    ],
     "scripts": {
         "post-install-cmd": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",

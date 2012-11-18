@@ -9,7 +9,7 @@ Feature: Creating task
     And I start filling the "create" form
 
   Scenario: Successfully create a task
-      When I fill "title" with "Improve FSCHateoasBundle"
+     When I fill "title" with "Improve FSCHateoasBundle"
       And I fill "description" with:
         """
         1. Something
@@ -29,15 +29,15 @@ Feature: Creating task
       And "/task/isDone" node value should be "false"
 
   Scenario: Trying to create a task with invalid data
-    When I fill "title" with "aaa"
-    And I submit the form
+     When I fill "title" with "aaa"
+      And I submit the form
 
-    Then the response status code should be 400
-    And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."
+     Then the response status code should be 400
+      And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."
 
   Scenario: Trying to create a task with no data
-    When I fill "title" with "aaa"
-    And I submit the form
+     When I fill "title" with "aaa"
+      And I submit the form
 
-    Then the response status code should be 400
-    And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."
+     Then the response status code should be 400
+     And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."

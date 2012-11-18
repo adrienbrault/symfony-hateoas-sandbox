@@ -93,6 +93,8 @@ class HateoasXmlContext extends RawMinkContext
      */
     protected function createXPath()
     {
-        return new \DOMXPath(iterator_to_array($this->getCrawler())[0]->ownerDocument);
+        $nodes = iterator_to_array($this->getCrawler());
+
+        return new \DOMXPath($nodes[0]->ownerDocument);
     }
 }

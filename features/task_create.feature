@@ -40,4 +40,4 @@ Feature: Creating task
       And I submit the form
 
      Then the response status code should be 400
-     And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."
+      And "//form[@name='title']/errors/entry" node value should be "This value is too short. It should have 5 characters or more."

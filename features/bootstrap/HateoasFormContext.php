@@ -29,15 +29,12 @@ class HateoasFormContext extends RawMinkContext
     }
 
     /**
-     * @When /^I start filling the "([^"]*)" form$/
+     * @When /^I start filling the rel="([^"]*)" form$/
      */
     public function iStartFillingTheForm($rel)
     {
-        $formCrawler = $this->getCrawler()->filterXPath(sprintf("//form[@rel='%s']", $rel))->first();
-
-        if (1 > $formCrawler->count()) {
-            throw new \RuntimeException(sprintf('No form with the rel "%s" found.', $rel));
-        }
+        $formCrawler = $this->getCrawler()->filterXPath(sprintf("//form[@rel='%s']", $rel));
+        $this->throwExceptionIfInvalidCount($formCrawler, $rel, 'rel');
 
         $this->formCrawler = $formCrawler;
         $this->form = $this->formCrawler->form();
@@ -57,37 +54,72 @@ class HateoasFormContext extends RawMinkContext
     }
 
     /**
-     * @When /^I fill "([^"]*)" with "([^"]*)"$/
+     * @When /^I fill id="([^"]*)" with "([^"]*)"$/
      */
     public function iFillWith($id, $value)
     {
-        return new Step\When(sprintf('I fill "%s" with:', $id), new PyStringNode($value));
+        return new Step\When(sprintf('I fill id="%s" with:', $id), new PyStringNode($value));
     }
 
     /**
-     * @When /^I fill "([^"]*)" with:$/
+     * @When /^I fill id="([^"]*)" with:$/
      */
     public function iFillWithText($id, PyStringNode $value)
     {
-        $field = $this->formCrawler->filterXPath(sprintf("//*[@id='%s']", $id))->first();
-
-        if (1 > $field->count()) {
-            throw new \RuntimeException(sprintf('No field with id "%s" found.', $id));
-        } else if (1 > $field->count()) {
-            throw new \RuntimeException(sprintf('More than 1 field with id "%s" found.', $id));
-        }
+        $field = $this->formCrawler->filterXPath(sprintf("//*[@id='%s']", $id));
+        $this->throwExceptionIfInvalidCount($field, $id);
 
         $this->form[$field->attr('name')] = $value;
     }
 
     /**
-     * @When /^I select "([^"]*)" in "([^"]*)"$/
+     * @When /^I select "([^"]*)" in id="([^"]*)"$/
      */
     public function iSelectIn($value, $id)
     {
-        $select = $this->formCrawler->filterXPath(sprintf("//select[@id='%s']", $id))->first();
+        $select = $this->formCrawler->filterXPath(sprintf("//select[@id='%s']", $id));
+        $this->throwExceptionIfInvalidCount($select, $id, 'id', 'select');
         $selectedOption = $select->filterXPath(sprintf("//option[contains(., '%s')]", $value));
 
         $this->form[$select->attr('name')]->select($selectedOption->attr('value'));
+    }
+
+    /**
+     * @When /^I check id="([^"]*)"$/
+     */
+    public function iCheck($id)
+    {
+        $this->setChecked($id, true);
+    }
+
+    /**
+     * @When /^I uncheck id="([^"]*)"$/
+     */
+    public function iUnCheck($id)
+    {
+        $this->setChecked($id, false);
+    }
+
+    protected function setChecked($id, $checked = true)
+    {
+        $input = $this->formCrawler->filterXPath(sprintf("//input[@type='checkbox' and @id='%s']", $id))->first();
+        $this->throwExceptionIfInvalidCount($input, $id, 'id', 'checkbox');
+
+        $field = $this->form[$input->attr('name')];
+
+        if ($checked) {
+            $field->tick();
+        } else {
+            $field->untick();
+        }
+    }
+
+    protected function throwExceptionIfInvalidCount($crawler, $id, $idName = 'id', $nodeName = 'field')
+    {
+        if (1 > $crawler->count()) {
+            throw new \RuntimeException(sprintf('No %s with %s "%s" found.', $nodeName, $idName, $id));
+        } else if (1 > $crawler->count()) {
+            throw new \RuntimeException(sprintf('More than 1 %s with %s "%s" found.', $nodeName, $idName, $id));
+        }
     }
 }

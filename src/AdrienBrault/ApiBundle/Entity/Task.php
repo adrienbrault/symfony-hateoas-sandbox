@@ -5,12 +5,23 @@ namespace AdrienBrault\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\SerializerBundle\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use FSC\HateoasBundle\Annotation as Hateoas;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name = "task")
  *
  * @Serializer\XmlRoot("task")
+ *
+ * @Hateoas\Relation("self", href = @Hateoas\Route("api_task_get", parameters = { "id" = ".id" }))
+ * @Hateoas\Relation("edit",
+ *      href = @Hateoas\Route("api_task_form_edit", parameters = { "id" = ".id" }),
+ *      embed = @Hateoas\Content(
+ *          provider = { "fsc_hateoas.factory.form_view", "formFactoryCreateNamed" },
+ *          providerArguments = { { "task", "adrienbrault_task", "@" }, "PUT", "api_task_edit", { "id" = ".id" } },
+ *          serializerXmlElementName = "form"
+ *      )
+ * )
  */
 class Task
 {

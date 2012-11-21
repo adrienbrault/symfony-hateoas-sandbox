@@ -85,3 +85,7 @@ fos_rest:
             - json
             - html
         fallback_format: xml
+
+jms_di_extra:
+    locations:
+        bundles: [ AdrienBraultApiBundle ]

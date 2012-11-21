@@ -1,6 +1,8 @@
 <?php
 
-use Behat\Behat\Context\BehatContext;
+use Behat\MinkExtension\Context\RawMinkContext;
+use Behat\Mink\Exception\ExpectationException;
+use Behat\Behat\Event\StepEvent;
 use Behat\CommonContexts;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Symfony2Extension\Context\KernelAwareInterface;
@@ -8,7 +10,7 @@ use Behat\Behat\Context\Step;
 use Sanpi\Behatch\Context\BehatchContext;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class FeatureContext extends BehatContext implements KernelAwareInterface
+class FeatureContext extends RawMinkContext implements KernelAwareInterface
 {
     /**
      * @var KernelInterface
@@ -41,5 +43,20 @@ class FeatureContext extends BehatContext implements KernelAwareInterface
     public function iAmOnTheRootEndpoint()
     {
         return new Step\Given('I am on homepage');
+    }
+
+    /**
+     * Wrap any exceptions into an ExpectationException so that behat shows the last response in verbose mode
+     *
+     * @AfterStep
+     */
+    public function after(StepEvent $event)
+    {
+        if (StepEvent::FAILED == $event->getResult() && !$event->getException() instanceof ExpectationException) {
+            $eventReflection = new \ReflectionClass(get_class($event));
+            $exceptionPropertyReflection = $eventReflection->getProperty('exception');
+            $exceptionPropertyReflection->setAccessible(true);
+            $exceptionPropertyReflection->setValue($event, new ExpectationException(null, $this->getSession(), $event->getException()));
+        }
     }
 }

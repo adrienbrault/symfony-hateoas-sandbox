@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 
 use AdrienBrault\ApiBundle\Entity\Task;
-use AdrienBrault\ApiBundle\Form\Type\TaskType;
 
 /**
  * @Route("/tasks")
@@ -31,7 +30,7 @@ class TaskController extends FOSRestController
      */
     public function createFormAction()
     {
-        $form = $this->get('form.factory')->createNamed('task', new TaskType(), null, array('is_create' => true));
+        $form = $this->createTaskForm($task = new Task(), true);
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_create');
         $formView->vars['attr']['rel'] = 'create';
 
@@ -46,8 +45,7 @@ class TaskController extends FOSRestController
      */
     public function createAction(Request $request)
     {
-        $task = new Task();
-        $form = $this->get('form.factory')->createNamed('task', new TaskType(), $task);
+        $form = $this->createTaskForm($task = new Task(), true);
 
         if (!$form->bind($request)->isValid()) {
             return $this->view($form, Codes::HTTP_BAD_REQUEST);
@@ -57,8 +55,53 @@ class TaskController extends FOSRestController
         $em->persist($task);
         $em->flush();
 
-        $taskUrl = $this->generateUrl('api_task_get', array('id' => $task->getId()), true);
+        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_CREATED);
+    }
 
-        return $this->redirectView($taskUrl, Codes::HTTP_CREATED);
+    /**
+     * @Method("GET")
+     * @Route("/{id}/forms/edit", name = "api_task_form_edit")
+     */
+    public function editFormAction(Task $task)
+    {
+        $form = $this->createTaskForm($task);
+        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_edit');
+        $formView->vars['attr']['rel'] = 'edit';
+
+        $this->get('serializer')->getSerializationVisitor('xml')->setDefaultRootName('form');
+
+        return $this->view($formView);
+    }
+
+    /**
+     * @Method("PUT")
+     * @Route("/{id}", name = "api_task_edit")
+     */
+    public function editAction(Task $task, Request $request)
+    {
+        $form = $this->createTaskForm($task);
+
+        if (!$form->bind($request)->isValid()) {
+            return $this->view($form, Codes::HTTP_BAD_REQUEST);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_ACCEPTED);
+    }
+
+    protected function generateTaskUrl(Task $task)
+    {
+        return $this->generateUrl('api_task_get', array('id' => $task->getId()), true);
+    }
+
+    protected function createTaskForm(Task $task, $create = false)
+    {
+        $options = array();
+        if ($create) {
+            $options['is_create'] = true;
+        }
+
+        return $this->get('form.factory')->createNamed('task', 'adrienbrault_task', $task, $options);
     }
 }

@@ -4,17 +4,12 @@ Feature: Creating task
   In order to update my progress
 
   Background:
-    Given I am on the root endpoint
-      And I follow the "tasks/create" link
-      And I start filling the rel="create" form
-      And I fill id="title" with "Improve FSCHateoasBundle"
-      And I fill id="description" with:
-        """
-        1. Something
-        2. Something else
-        """
-      And I submit the form
-      And I should be redirected
+    Given I create a task named "Improve FSCHateoasBundle" described by:
+      """
+      1. Something
+      2. Something else
+      """
+    Then I should be redirected
 
   Scenario: Successfully edit a task
      When I start filling the rel="edit" form

@@ -4,11 +4,14 @@ namespace AdrienBrault\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\Rest\Util\Codes;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 
 use AdrienBrault\ApiBundle\Entity\Task;
+use AdrienBrault\ApiBundle\Form\Model\Pagination;
 
 /**
  * @Route("/tasks")
@@ -26,6 +29,46 @@ class TaskController extends FOSRestController
 
     /**
      * @Method("GET")
+     * @Route("", name = "api_task_list")
+     */
+    public function getTasksAction(Request $request)
+    {
+        $paginationForm = $this->createPaginationForm($pagination = new Pagination());
+
+        if (!$paginationForm->bind($request)->isValid()) {
+            return $this->view($paginationForm);
+        }
+
+        $taskRepository = $this->getDoctrine()->getManager()->getRepository('AdrienBraultApiBundle:Task');
+        $pager = new Pagerfanta(new DoctrineORMAdapter($taskRepository->createQueryBuilder('t')));
+        $pager->setMaxPerPage($pagination->getLimit());
+        $pager->setCurrentPage($pagination->getPage());
+
+        $relationsManager = $this->get('fsc_hateoas.metadata.relations_manager');
+        $relationsManager->addBasicRelations($pager);
+        $relationsManager->addRelation($pager, 'pagination', array('route' => 'api_task_form_pagination'), array(
+            'provider' => array('fsc_hateoas.factory.form_view', 'create'),
+            'providerArguments' => array($paginationForm, 'GET', 'api_task_list'),
+        ));
+
+        return $this->view($pager);
+    }
+
+    /**
+     * @Method("GET")
+     * @Route("/forms/pagination", name = "api_task_form_pagination")
+     */
+    public function paginationFormAction()
+    {
+        $form = $this->createPaginationForm($pagination = new Pagination());
+        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'GET', 'api_task_list');
+        $formView->vars['attr']['rel'] = 'pagination';
+
+        return $this->view($formView);
+    }
+
+    /**
+     * @Method("GET")
      * @Route("/forms/create", name = "api_task_form_create")
      */
     public function createFormAction()
@@ -33,8 +76,6 @@ class TaskController extends FOSRestController
         $form = $this->createTaskForm($task = new Task(), true);
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_create');
         $formView->vars['attr']['rel'] = 'create';
-
-        $this->get('serializer')->getSerializationVisitor('xml')->setDefaultRootName('form');
 
         return $this->view($formView);
     }
@@ -48,7 +89,7 @@ class TaskController extends FOSRestController
         $form = $this->createTaskForm($task = new Task(), true);
 
         if (!$form->bind($request)->isValid()) {
-            return $this->view($form, Codes::HTTP_BAD_REQUEST);
+            return $this->view($form);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -68,8 +109,6 @@ class TaskController extends FOSRestController
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_edit');
         $formView->vars['attr']['rel'] = 'edit';
 
-        $this->get('serializer')->getSerializationVisitor('xml')->setDefaultRootName('form');
-
         return $this->view($formView);
     }
 
@@ -82,7 +121,7 @@ class TaskController extends FOSRestController
         $form = $this->createTaskForm($task);
 
         if (!$form->bind($request)->isValid()) {
-            return $this->view($form, Codes::HTTP_BAD_REQUEST);
+            return $this->view($form);
         }
 
         $this->getDoctrine()->getManager()->flush();
@@ -97,11 +136,13 @@ class TaskController extends FOSRestController
 
     protected function createTaskForm(Task $task, $create = false)
     {
-        $options = array();
-        if ($create) {
-            $options['is_create'] = true;
-        }
+        $options = $create ? array('is_create' => true) : array();
 
         return $this->get('form.factory')->createNamed('task', 'adrienbrault_task', $task, $options);
+    }
+
+    protected function createPaginationForm(Pagination $pagination)
+    {
+        return $this->get('form.factory')->createNamed('pagination', 'adrienbrault_pagination', $pagination);
     }
 }

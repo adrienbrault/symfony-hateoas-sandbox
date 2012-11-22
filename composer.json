@@ -24,7 +24,9 @@
         "jms/di-extra-bundle": "1.2.*",
 
         "friendsofsymfony/rest-bundle": "0.10.*",
-        "fsc/hateoas-bundle": "0.2.*"
+        "fsc/hateoas-bundle": "0.2.*",
+
+        "pagerfanta/pagerfanta": "*"
     },
     "require-dev": {
         "behat/behat": "2.4.*",

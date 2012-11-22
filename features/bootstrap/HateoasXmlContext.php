@@ -87,6 +87,32 @@ class HateoasXmlContext extends RawMinkContext
     }
 
     /**
+     * @Then /^(?:the )?"([^"]*)" node attribute "([^"]*)" should be "([^"]*)"$/
+     */
+    public function nodeAttributeShouldBeText($xpath, $attributeName, $expectedValue)
+    {
+        $domXPath = $this->createXPath();
+        $nodeList = $domXPath->query($xpath);
+
+        if (1 > $nodeList->length) {
+            throw new \RuntimeException(sprintf('No node found matching xpath "%s".', $xpath));
+        } else if (1 > $nodeList->length) {
+            throw new \RuntimeException(sprintf('More than 1 node found matching xpath "%s".', $xpath));
+        }
+
+        $value = $nodeList->item(0)->attributes->getNamedItem($attributeName)->nodeValue;
+        if ($value != $expectedValue) {
+            throw new \RuntimeException(sprintf(
+                'Node attribute "%s" matching xpath "%s", value is "%s" instead of "%s".',
+                $attributeName,
+                $xpath,
+                $value,
+                $expectedValue
+            ));
+        }
+    }
+
+    /**
      * We directly use the DOMXPath object because the DOMCrawler wraps the dom inside a root element ...
      *
      * @return DOMXPath

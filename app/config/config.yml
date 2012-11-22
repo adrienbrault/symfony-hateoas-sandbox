@@ -86,6 +86,17 @@ fos_rest:
             - html
         fallback_format: xml
 
+    exception:
+        codes:
+            'Pagerfanta\Exception\NotValidCurrentPageException': 404
+            'Pagerfanta\Exception\NotValidMaxPerPageException': 404
+
 jms_di_extra:
     locations:
         bundles: [ AdrienBraultApiBundle ]
+
+fsc_hateoas:
+    pagerfanta:
+        parameters_name:
+            page: pagination[page]
+            limit: pagination[limit]

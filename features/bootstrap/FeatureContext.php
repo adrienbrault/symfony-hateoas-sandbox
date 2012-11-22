@@ -1,6 +1,7 @@
 <?php
 
 use Behat\MinkExtension\Context\RawMinkContext;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Behat\Event\StepEvent;
 use Behat\CommonContexts;
@@ -58,5 +59,37 @@ class FeatureContext extends RawMinkContext implements KernelAwareInterface
             $exceptionPropertyReflection->setAccessible(true);
             $exceptionPropertyReflection->setValue($event, new ExpectationException(null, $this->getSession(), $event->getException()));
         }
+    }
+
+    /**
+     * @Given /^there are (\d+) tasks?$/
+     */
+    public function thereAreTasks($count)
+    {
+        $steps = array();
+
+        for ($i = 0; $i < $count; $i++) {
+            $steps[] = new Step\When(
+                sprintf('I create a task named "task %d" described by:', $i),
+                new PyStringNode(sprintf('Task description %d', $i))
+            );
+        }
+
+        return $steps;
+    }
+
+    /**
+     * @When /^I create a task named "([^"]*)" described by:$/
+     */
+    public function iCreateATaskNamedDescribedBy($name, PyStringNode $descriptionString)
+    {
+        return array(
+            new Step\When('I am on the root endpoint'),
+            new Step\When('I follow the "tasks/create" link'),
+            new Step\When('I start filling the rel="create" form'),
+            new Step\When(sprintf('I fill id="title" with "%s"', $name)),
+            new Step\When('I fill id="description" with:', $descriptionString),
+            new Step\When('I submit the form'),
+        );
     }
 }

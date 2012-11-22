@@ -55,6 +55,42 @@ class TaskController extends FOSRestController
     }
 
     /**
+     * @Method("POST")
+     * @Route("", name = "api_task_create")
+     */
+    public function createAction(Request $request)
+    {
+        $form = $this->createTaskForm($task = new Task(), true);
+
+        if (!$form->bind($request)->isValid()) {
+            return $this->view($form);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($task);
+        $em->flush();
+
+        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_CREATED);
+    }
+
+    /**
+     * @Method("PUT")
+     * @Route("/{id}", name = "api_task_edit")
+     */
+    public function editAction(Task $task, Request $request)
+    {
+        $form = $this->createTaskForm($task);
+
+        if (!$form->bind($request)->isValid()) {
+            return $this->view($form);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_ACCEPTED);
+    }
+
+    /**
      * @Method("GET")
      * @Route("/forms/pagination", name = "api_task_form_pagination")
      */
@@ -81,25 +117,6 @@ class TaskController extends FOSRestController
     }
 
     /**
-     * @Method("POST")
-     * @Route("", name = "api_task_create")
-     */
-    public function createAction(Request $request)
-    {
-        $form = $this->createTaskForm($task = new Task(), true);
-
-        if (!$form->bind($request)->isValid()) {
-            return $this->view($form);
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($task);
-        $em->flush();
-
-        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_CREATED);
-    }
-
-    /**
      * @Method("GET")
      * @Route("/{id}/forms/edit", name = "api_task_form_edit")
      */
@@ -110,23 +127,6 @@ class TaskController extends FOSRestController
         $formView->vars['attr']['rel'] = 'edit';
 
         return $this->view($formView);
-    }
-
-    /**
-     * @Method("PUT")
-     * @Route("/{id}", name = "api_task_edit")
-     */
-    public function editAction(Task $task, Request $request)
-    {
-        $form = $this->createTaskForm($task);
-
-        if (!$form->bind($request)->isValid()) {
-            return $this->view($form);
-        }
-
-        $this->getDoctrine()->getManager()->flush();
-
-        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_ACCEPTED);
     }
 
     protected function generateTaskUrl(Task $task)

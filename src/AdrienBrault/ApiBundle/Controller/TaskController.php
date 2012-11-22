@@ -106,7 +106,7 @@ class TaskController extends FOSRestController
     public function editFormAction(Task $task)
     {
         $form = $this->createTaskForm($task);
-        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_edit');
+        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'PUT', 'api_task_edit');
         $formView->vars['attr']['rel'] = 'edit';
 
         return $this->view($formView);

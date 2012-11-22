@@ -5,4 +5,4 @@ Symfony Hateoas Sandbox
 
 Symfony 2 application meant to be an example on how to build an HATEOAS api.
 
-[https://gist.github.com/4133000](Example usage with curl).
+[Example usage with curl](https://gist.github.com/4133000).

@@ -45,7 +45,7 @@ class TaskController extends FOSRestController
         $pager->setCurrentPage($pagination->getPage());
 
         $relationsManager = $this->get('fsc_hateoas.metadata.relations_manager');
-        $relationsManager->addBasicRelations($pager);
+        $relationsManager->addBasicRelations($pager); // will add self + navigation links
         $relationsManager->addRelation($pager, 'pagination', array('route' => 'api_task_form_pagination'), array(
             'provider' => array('fsc_hateoas.factory.form_view', 'create'),
             'providerArguments' => array($paginationForm, 'GET', 'api_task_list'),
@@ -99,6 +99,7 @@ class TaskController extends FOSRestController
         $form = $this->createPaginationForm($pagination = new Pagination());
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'GET', 'api_task_list');
         $formView->vars['attr']['rel'] = 'pagination';
+        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }
@@ -112,6 +113,7 @@ class TaskController extends FOSRestController
         $form = $this->createTaskForm($task = new Task(), true);
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_create');
         $formView->vars['attr']['rel'] = 'create';
+        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }
@@ -125,6 +127,7 @@ class TaskController extends FOSRestController
         $form = $this->createTaskForm($task);
         $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'PUT', 'api_task_edit', array('id' => $task->getId()));
         $formView->vars['attr']['rel'] = 'edit';
+        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }

@@ -1,4 +1,4 @@
-Feature: Creating task
+Feature: Editing task
   As a visitor
   I want to edit existing tasks
   In order to update my progress

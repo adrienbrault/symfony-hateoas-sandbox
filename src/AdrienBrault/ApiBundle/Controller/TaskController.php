@@ -2,7 +2,6 @@
 
 namespace AdrienBrault\ApiBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\Rest\Util\Codes;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
@@ -16,7 +15,7 @@ use AdrienBrault\ApiBundle\Form\Model\Pagination;
 /**
  * @Route("/tasks")
  */
-class TaskController extends FOSRestController
+class TaskController extends Controller
 {
     /**
      * @Method("GET")
@@ -70,7 +69,7 @@ class TaskController extends FOSRestController
         $em->persist($task);
         $em->flush();
 
-        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_CREATED);
+        return $this->redirectView($this->generateSelfUrl($task), Codes::HTTP_CREATED);
     }
 
     /**
@@ -87,7 +86,7 @@ class TaskController extends FOSRestController
 
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->redirectView($this->generateTaskUrl($task), Codes::HTTP_ACCEPTED);
+        return $this->redirectView($this->generateSelfUrl($task), Codes::HTTP_ACCEPTED);
     }
 
     /**
@@ -130,11 +129,6 @@ class TaskController extends FOSRestController
         $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
-    }
-
-    protected function generateTaskUrl(Task $task)
-    {
-        return $this->generateUrl('api_task_get', array('id' => $task->getId()), true);
     }
 
     protected function createTaskForm(Task $task, $create = false)

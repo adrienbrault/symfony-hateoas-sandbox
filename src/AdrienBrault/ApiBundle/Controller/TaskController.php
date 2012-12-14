@@ -39,13 +39,10 @@ class TaskController extends Controller
         }
 
         $taskRepository = $this->getDoctrine()->getManager()->getRepository('AdrienBraultApiBundle:Task');
-        $pager = new Pagerfanta(new DoctrineORMAdapter($taskRepository->createQueryBuilder('t')));
-        $pager->setMaxPerPage($pagination->getLimit());
-        $pager->setCurrentPage($pagination->getPage());
+        $pager = $this->createORMPager($pagination, $taskRepository->createQueryBuilder('t'));
 
-        $relationsManager = $this->get('fsc_hateoas.metadata.relations_manager');
-        $relationsManager->addBasicRelations($pager); // will add self + navigation links
-        $relationsManager->addRelation($pager, 'pagination', array('route' => 'api_task_form_pagination'), array(
+        $this->addBasicRelations($pager); // will add self + navigation links
+        $this->addRelation($pager, 'pagination', array('route' => 'api_task_form_pagination'), array(
             'provider' => array('fsc_hateoas.factory.form_view', 'create'),
             'providerArguments' => array($paginationForm, 'GET', 'api_task_list'),
         ));
@@ -96,9 +93,9 @@ class TaskController extends Controller
     public function paginationFormAction()
     {
         $form = $this->createPaginationForm($pagination = new Pagination());
-        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'GET', 'api_task_list'); // will add method/action attributes
-        $formView->vars['attr']['rel'] = 'pagination';
-        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
+        $formView = $this->createFormView($form, 'GET', 'api_task_list'); // will add method/action attributes
+
+        $this->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }
@@ -110,9 +107,9 @@ class TaskController extends Controller
     public function createFormAction()
     {
         $form = $this->createTaskForm($task = new Task(), true);
-        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'POST', 'api_task_create'); // will add method/action attributes
-        $formView->vars['attr']['rel'] = 'create';
-        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
+        $formView = $this->createFormView($form, 'POST', 'api_task_create'); // will add method/action attributes
+
+        $this->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }
@@ -124,9 +121,9 @@ class TaskController extends Controller
     public function editFormAction(Task $task)
     {
         $form = $this->createTaskForm($task);
-        $formView = $this->get('fsc_hateoas.factory.form_view')->create($form, 'PUT', 'api_task_edit', array('id' => $task->getId())); // will add method/action attributes
-        $formView->vars['attr']['rel'] = 'edit';
-        $this->get('fsc_hateoas.metadata.relations_manager')->addBasicRelations($formView); // will add self link
+        $formView = $this->createFormView($form, 'PUT', 'api_task_edit', array('id' => $task->getId())); // will add method/action attributes
+
+        $this->addBasicRelations($formView); // will add self link
 
         return $this->view($formView);
     }
@@ -135,11 +132,11 @@ class TaskController extends Controller
     {
         $options = $create ? array('is_create' => true) : array();
 
-        return $this->get('form.factory')->createNamed('task', 'adrienbrault_task', $task, $options);
+        return $this->createFormNamed('task', 'adrienbrault_task', $task, $options);
     }
 
     protected function createPaginationForm(Pagination $pagination)
     {
-        return $this->get('form.factory')->createNamed('pagination', 'adrienbrault_pagination', $pagination);
+        return $this->createFormNamed('pagination', 'adrienbrault_pagination', $pagination);
     }
 }

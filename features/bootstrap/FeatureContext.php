@@ -86,7 +86,7 @@ class FeatureContext extends RawMinkContext implements KernelAwareInterface
         return array(
             new Step\When('I am on the root endpoint'),
             new Step\When('I follow the "tasks/create" link'),
-            new Step\When('I start filling the rel="create" form'),
+            new Step\When('I start filling the form'),
             new Step\When(sprintf('I fill id="title" with "%s"', $name)),
             new Step\When('I fill id="description" with:', $descriptionString),
             new Step\When('I submit the form'),

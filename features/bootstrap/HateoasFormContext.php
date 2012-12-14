@@ -30,10 +30,15 @@ class HateoasFormContext extends RawMinkContext
 
     /**
      * @When /^I start filling the rel="([^"]*)" form$/
+     * @When /^I start filling the form$/
      */
-    public function iStartFillingTheForm($rel)
+    public function iStartFillingTheForm($rel = null)
     {
-        $formCrawler = $this->getCrawler()->filterXPath(sprintf("//form[@rel='%s']", $rel));
+        if (null !== $rel) {
+            $formCrawler = $this->getCrawler()->filterXPath(sprintf("//form[@rel='%s']", $rel));
+        } else {
+            $formCrawler = $this->getCrawler()->filterXPath(sprintf("//form", $rel));
+        }
         $this->throwExceptionIfInvalidCount($formCrawler, $rel, 'rel');
 
         $this->formCrawler = $formCrawler;

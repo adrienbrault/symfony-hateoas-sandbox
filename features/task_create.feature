@@ -6,7 +6,7 @@ Feature: Creating task
   Background:
     Given I am on the root endpoint
       And I follow the "tasks/create" link
-      And I start filling the rel="create" form
+      And I start filling the form
 
   Scenario: Successfully create a task
      When I fill id="title" with "Improve FSCHateoasBundle"

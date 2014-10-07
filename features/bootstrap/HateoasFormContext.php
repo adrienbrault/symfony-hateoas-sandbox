@@ -123,7 +123,7 @@ class HateoasFormContext extends RawMinkContext
     {
         if (1 > $crawler->count()) {
             throw new \RuntimeException(sprintf('No %s with %s "%s" found.', $nodeName, $idName, $id));
-        } else if (1 > $crawler->count()) {
+        } else if (1 < $crawler->count()) {
             throw new \RuntimeException(sprintf('More than 1 %s with %s "%s" found.', $nodeName, $idName, $id));
         }
     }
